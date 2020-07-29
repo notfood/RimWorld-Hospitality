@@ -38,6 +38,7 @@ namespace Hospitality
 
         protected override void FillTab()
         {
+            Multiplayer.WatchBegin();
             Text.Font = GameFont.Small;
             Rect rect = new Rect(0f, 20f, size.x, size.y - 20).ContractedBy(10f);
             listingStandard.Begin(rect);
@@ -52,6 +53,7 @@ namespace Hospitality
                 }
             }
             listingStandard.End();
+            Multiplayer.WatchEnd();
         }
 
         private void FillTabTrader()
@@ -75,6 +77,9 @@ namespace Hospitality
             listingStandard.ColumnWidth = size.x - 20;
 
             var comp = SelPawn.CompGuest();
+
+            Multiplayer.guestFields?.Watch(comp);
+
             // If the lord is not on the map it's invalid!
             if (comp?.lord != null && comp.lord.ownedPawns.Contains(SelPawn) && SelPawn.Map.lordManager.lords.Contains(comp.lord))
             {
@@ -213,7 +218,7 @@ namespace Hospitality
             Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(text, () => SendHome(lord)));
         }
 
-        private static void SendHome(Lord lord)
+        internal static void SendHome(Lord lord)
         {
             if (lord == null)
             {
@@ -234,9 +239,9 @@ namespace Hospitality
             }
         }
 
-        private void SetAllDefaults(Pawn pawn)
+        internal static void SetAllDefaults(Pawn pawn)
         {
-            Map map = SelPawn.MapHeld;
+            Map map = pawn.MapHeld;
             if (map == null) return;
 
             var mapComp = map.GetMapComponent();
